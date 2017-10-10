@@ -16,6 +16,25 @@ function init() {
         controls: ['zoomControl', 'fullscreenControl']
     });
 
+    myMap.events.add('click', e => {
+        var coords = e.get('coords');
+
+        ymaps.geocode(coords)
+            .then(res => {
+                var object = res.geoObjects.get(0),
+                    address = object.properties.get('text');
+
+                myMap.balloon.open(coords,{
+                    coords: coords,
+                    address: address,
+                    message: 'Отзывов пока нет...'
+                },{
+                    layout: balloonTpl,
+                    contentLayout: balloonContentTpl
+                });
+            });
+    });
+
     var balloonTpl = ymaps.templateLayoutFactory.createClass(
         `<div class="review-popup">
             <div class="review-head">
@@ -187,24 +206,5 @@ function init() {
         clusterOpenBalloonOnClick: true,
         clusterBalloonItemContentLayout: clustererTpl,
         clusterBalloonPanelMaxMapArea: 0
-    });
-
-    myMap.events.add('click', e => {
-        var coords = e.get('coords');
-
-        ymaps.geocode(coords)
-            .then(res => {
-                var object = res.geoObjects.get(0),
-                    address = object.properties.get('text');
-
-                myMap.balloon.open(coords,{
-                    coords: coords,
-                    address: address,
-                    message: 'Отзывов пока нет...'
-                },{
-                    layout: balloonTpl,
-                    contentLayout: balloonContentTpl
-                });
-            });
     });
 }
